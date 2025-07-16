@@ -15,12 +15,18 @@ public class CharacterMovement : MonoBehaviour
     public float groundRadius = 0.2f;
     public LayerMask whatIsGround;
 
+    public float knifeSpeed = 600.0f;
+    public Transform knifeSpawn;
+    public Rigidbody knifePrefab;
+    Rigidbody clone;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
         groundCheck = GameObject.Find("GroundCheck").transform;
+        knifeSpawn = GameObject.Find("KnifeSpawn").transform;
     }
 
     // Update is called once per frame
@@ -49,11 +55,27 @@ public class CharacterMovement : MonoBehaviour
             flip();
         }
         anim.SetFloat("Speed", Mathf.Abs(moveDirection));
+
+        if(Input.GetButtonDown("Fire1"))
+        {
+            Attack();
+        }
     }
 
     void flip()
     {
         facingRight = !facingRight;
         transform.Rotate(Vector3.up,180.0f, Space.World);
+    }
+
+    void Attack()
+    {
+        anim.SetTrigger("attacking");
+    }
+
+    public void CallFireProjectile()
+    {
+        clone = Instantiate(knifePrefab, knifeSpawn.position, knifeSpawn.rotation) as Rigidbody;
+        clone.AddForce(knifeSpawn.transform.right * knifeSpeed);
     }
 }
